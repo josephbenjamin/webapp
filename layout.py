@@ -1,55 +1,108 @@
-from dash import html, dcc
+from dash import dcc, html
+import dash_bootstrap_components as dbc
 from data import prepare_data
 
 df = prepare_data()  # Load the data once for reuse
 
 app_layout = html.Div(
-    style={"fontFamily": "Arial, sans-serif", "padding": "20px"},
+    id="app-container",  # ID for setting Bootstrap's data-bs-theme attribute
     children=[
-        html.H1("Bank Rate Dashboard", style={"textAlign": "center"}),
-
-        html.Div(
-            style={"display": "flex", "flexDirection": "row"},
-            children=[
-                # Left-aligned div with RangeSlider
-                html.Div(
-                    style={"width": "20%", "padding": "10px", "borderRight": "1px solid #ddd"},
-                    children=[
-                        html.Label("Select Date Range:"),
-                        dcc.RangeSlider(
-                            id="date-range-slider",
-                            min=0,
-                            max=len(df) - 1,
-                            step=1,
-                            value=[0, len(df) - 1],
-                            marks={
-                                0: str(df.index[0].date()),
-                                len(df) - 1: str(df.index[-1].date()),
-                            },
-                            tooltip={"placement": "bottom", "always_visible": True},
-                        ),
-                        html.Div(id="selected-dates", style={"marginTop": "10px"}),
-                        html.Label("Select Series:"),
-                        dcc.Dropdown(
-                            id="series-dropdown",
-                            options=[
-                                {"label": "Bank Rate", "value": "Rate"},
-                                {"label": "Random Walk", "value": "Random Walk"},
-                                {"label": "Both", "value": "Both"},
-                            ],
-                            value="Both",
-                            clearable=False,
+        dbc.Container(
+            [
+                # Header Row
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            html.H1(
+                                "Bank Rate Dashboard",
+                                className="text-left",  # Align title to the left
+                            ),
                         ),
                     ],
+                    className="mb-4",  # Add spacing below the header row
                 ),
-                # Right-aligned graph
-                html.Div(
-                    style={"flexGrow": "1", "padding": "10px"},
-                    children=[
-                        dcc.Graph(id="time-series-chart"),
+                # Theme Toggle Row
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            dbc.Switch(
+                                id="theme-toggle",
+                                label="Dark Mode",
+                            ),
+                            width=3,
+                        ),
                     ],
+                    className="mb-4",  # Add spacing below the toggle row
+                ),
+                # Inputs and Output Layout
+                dbc.Row(
+                    [
+                        # Inputs in a Card
+                        dbc.Col(
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader("Inputs", className="bg-body-primary"),  # Theme-aware header
+                                    dbc.CardBody(
+                                        [
+                                            html.Label(
+                                                "Select Date Range:",
+                                                className="form-label",  # Bootstrap's form label class
+                                            ),
+                                            dcc.RangeSlider(
+                                                id="date-range-slider",
+                                                min=0,
+                                                max=len(df) - 1,
+                                                step=1,
+                                                value=[0, len(df) - 1],
+                                                marks={
+                                                    i: (df.index[i].strftime('%d %b %Y') if i in [0, len(df) - 1] else "")
+                                                    for i in range(len(df))
+                                                },
+                                                tooltip={"placement": "bottom", "always_visible": True},
+                                            ),
+                                            html.Div(
+                                                id="selected-dates",
+                                                className="mt-3",  # Add margin above
+                                            ),
+                                            html.Label(
+                                                "Select Series:",
+                                                className="form-label mt-3",  # Theme-aware label
+                                            ),
+                                            dbc.Select(
+                                                id="series-dropdown",
+                                                options=[
+                                                    {"label": "Bank Rate", "value": "Rate"},
+                                                    {"label": "Random Walk", "value": "Random Walk"},
+                                                    {"label": "Both", "value": "Both"},
+                                                ],
+                                                value="Both",
+                                                className="form-select",  # Theme-aware dropdown
+                                            ),
+                                        ]
+                                    ),
+                                ],
+                                className="bg-body-tertiary shadow-sm",  # Theme-aware card
+                            ),
+                            width=3,
+                        ),
+                        # Output Plot in a Card
+                        dbc.Col(
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader(
+                                        "Outputs",
+                                        className="bg-body-secondary",  # Theme-aware header
+                                    ),
+                                    dbc.CardBody(dcc.Graph(id="time-series-chart")),
+                                ],
+                                className="bg-body-tertiary shadow-sm",  # Theme-aware card
+                            ),
+                            width=9,
+                        ),
+                    ]
                 ),
             ],
+            fluid=True,
         ),
     ],
 )

@@ -1,4 +1,4 @@
-from dash import Input, Output, Patch
+from dash import Input, Output, State, Patch
 from app import app
 from data import prepare_data
 import plotly.graph_objects as go
@@ -12,7 +12,7 @@ df = prepare_data()
     Output("time-series-chart", "figure"),
     Input("date-range-slider", "value"),
     Input("series-dropdown", "value"),
-    Input("theme-toggle", "value")
+    State("theme-toggle", "value")
 )
 
 def update_graph(date_range, selected_series, theme_toggle):
@@ -135,6 +135,7 @@ def update_tooltip(value):
 )
 
 def update_template(theme_toggle):
+    print(f"update_template() triggered. theme_toggle: {theme_toggle}")
     theme_name = 'bootstrap' # manual update for now, rather than linked to global variable
     template_name = theme_name + "_dark" if theme_toggle else theme_name
     load_figure_template("all") # ensure plotly is updated with all the available names ? (tentative)

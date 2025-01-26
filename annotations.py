@@ -68,7 +68,7 @@ def annotate_line_end(ax, line, offset=0.02):
 if __name__ == '__main__':
     # Example usage
     np.random.seed(42)  # For reproducibility
-    plt.style.use('classic')
+    plt.style.use('ggplot')
     fig, ax = plt.subplots(figsize=(12, 8), layout='constrained')
 
     ax.spines['top'].set_visible(False)

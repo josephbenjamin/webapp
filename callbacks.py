@@ -61,10 +61,26 @@ def update_graph(date_range, selected_series):
 app.clientside_callback(
     """
     function(switchOn) {
-        document.documentElement.setAttribute('data-bs-theme', switchOn ? 'dark' : 'light');  
+        document.documentElement.setAttribute('data-bs-theme', switchOn ? 'dark' : 'light');
         return window.dash_clientside.no_update;
     }
     """,
     Output("theme-toggle", "value"),  # A dummy Output just to register the callback
     Input("theme-toggle", "value"),
 )
+
+@app.callback(
+    Output("date-range-slider", "marks"),  # Dynamically update marks
+    Input("date-range-slider", "value"),
+)
+def update_tooltip(value):
+    # Extract start and end indices from the slider
+    start_idx, end_idx = value
+
+    # Format dates for the tooltips
+    marks = {
+        start_idx: df.index[start_idx].strftime('%d %b %Y'),
+        end_idx: df.index[end_idx].strftime('%d %b %Y'),
+    }
+
+    return marks

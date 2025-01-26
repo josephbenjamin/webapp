@@ -58,7 +58,9 @@ app_layout = html.Div(
                                                     i: (df.index[i].strftime('%d %b %Y') if i in [0, len(df) - 1] else "")
                                                     for i in range(len(df))
                                                 },
-                                                tooltip={"placement": "bottom", "always_visible": True},
+                                                # tooltip={"placement": "top", "always_visible": False},
+                                                # tooltip={"always_visible": False}
+
                                             ),
                                             html.Div(
                                                 id="selected-dates",

@@ -1,7 +1,9 @@
-from dash import Input, Output
+from dash import Input, Output, Patch
 from app import app
 from data import prepare_data
 import plotly.graph_objects as go
+import plotly.io as pio
+from dash_bootstrap_templates import load_figure_template, template_from_url
 
 df = prepare_data()
 
@@ -9,10 +11,14 @@ df = prepare_data()
     Output("selected-dates", "children"),
     Output("time-series-chart", "figure"),
     Input("date-range-slider", "value"),
-    Input("series-dropdown", "value")
+    Input("series-dropdown", "value"),
+    Input("theme-toggle", "value")
 )
 
-def update_graph(date_range, selected_series):
+def update_graph(date_range, selected_series, theme_toggle):
+    #  handle dark / light templates
+    template = "bootstrap_dark" if theme_toggle else "bootstrap"
+
     # Extract start and end indices from the slider
     start_idx, end_idx = date_range
     start_date = df.index[start_idx]
@@ -44,11 +50,46 @@ def update_graph(date_range, selected_series):
             line=dict(color="orange", dash="dot"),
         ))
 
+    # load and apply the relevant figure template to align with the chosen webapp theme
+    themes = [
+        "bootstrap",
+        "cerulean",
+        "cosmo",
+        "cyborg",
+        "darkly",
+        "flatly",
+        "journal",
+        "litera",
+        "lumen",
+        "lux",
+        "materia",
+        "minty",
+        "morph",
+        "pulse",
+        "quartz",
+        "sandstone",
+        "simplex",
+        "sketchy",
+        "slate",
+        "solar",
+        "spacelab",
+        "superhero",
+        "united",
+        "vapor",
+        "yeti",
+        "zephyr",
+    ]
+
+    dark_themes = [t + "_dark" for t in themes]
+    all_templates = themes + dark_themes
+    all_templates.sort()
+    load_figure_template("all")
+
     fig.update_layout(
         title="Bank Rate and Random Walk Over Time",
         xaxis_title="Date",
         yaxis_title="Value",
-        template="plotly_white",
+        template=template,
         xaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True),
         legend=dict(x=0.01, y=0.99),
@@ -84,3 +125,21 @@ def update_tooltip(value):
     }
 
     return marks
+
+
+# Speed up the update of figure templates by using Patch()
+@app.callback(
+    Output("time-series-chart", "figure", allow_duplicate=True),
+    Input("theme-toggle", "value"),
+    prevent_initial_call=True
+)
+
+def update_template(theme_toggle):
+    theme_name = 'bootstrap' # manual update for now, rather than linked to global variable
+    template_name = theme_name + "_dark" if theme_toggle else theme_name
+    load_figure_template("all") # ensure plotly is updated with all the available names ? (tentative)
+    patched_figure = Patch()
+    # When using Patch() to update the figure template, you must use the figure template dict
+    # from plotly.io  and not just the template name
+    patched_figure["layout"]["template"] = pio.templates[template_name]
+    return patched_figure

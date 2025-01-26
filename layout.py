@@ -4,6 +4,15 @@ from data import prepare_data
 
 df = prepare_data()  # Load the data once for reuse
 
+# define the colour switch
+color_mode_switch =  html.Span(
+    [
+        dbc.Label(className="fa fa-moon", html_for="switch"),
+        dbc.Switch( id="theme-toggle", value=True, className="d-inline-block ms-1", persistence=True),
+        dbc.Label(className="fa fa-sun", html_for="switch"),
+    ]
+)
+
 app_layout = html.Div(
     id="app-container",  # ID for setting Bootstrap's data-bs-theme attribute
     children=[
@@ -25,11 +34,13 @@ app_layout = html.Div(
                 dbc.Row(
                     [
                         dbc.Col(
-                            dbc.Switch(
-                                id="theme-toggle",
-                                label="Dark Mode",
-                            ),
-                            width=3,
+                            # dbc.Switch(
+                            #     id="theme-toggle",
+                            #     label="Dark Mode",
+                            # ),
+                            # width=3,
+                            color_mode_switch
+
                         ),
                     ],
                     className="mb-4",  # Add spacing below the toggle row
@@ -41,7 +52,7 @@ app_layout = html.Div(
                         dbc.Col(
                             dbc.Card(
                                 [
-                                    dbc.CardHeader("Inputs", className="bg-body-primary"),  # Theme-aware header
+                                    dbc.CardHeader("Inputs", className="bg-body-secondary"),  # Theme-aware header
                                     dbc.CardBody(
                                         [
                                             html.Label(
@@ -83,7 +94,7 @@ app_layout = html.Div(
                                         ]
                                     ),
                                 ],
-                                className="bg-body-tertiary shadow-sm",  # Theme-aware card
+                                className="bg-body-primary shadow-sm",  # Theme-aware card
                             ),
                             width=3,
                         ),
@@ -97,7 +108,7 @@ app_layout = html.Div(
                                     ),
                                     dbc.CardBody(dcc.Graph(id="time-series-chart")),
                                 ],
-                                className="bg-body-tertiary shadow-sm",  # Theme-aware card
+                                className="bg-body-primary shadow-sm",  # Theme-aware card
                             ),
                             width=9,
                         ),

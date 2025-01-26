@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 
 # Initialize the app with an initial theme
 app = Dash(__name__,
-           external_stylesheets=[dbc.themes.BOOTSTRAP]
+           external_stylesheets=[dbc.themes.BOOTSTRAP,
+                                 dbc.icons.FONT_AWESOME]
            )
 server = app.server

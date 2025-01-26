@@ -55,7 +55,7 @@ def annotate_line_end(ax, line, offset=0.02):
         latest_x + offset * (ax.get_xlim()[1] - ax.get_xlim()[0]),
         latest_y,
         f"{latest_y:.2f}",
-        fontsize=10,
+        fontsize=8,
         color=text_color,
         bbox=bbox_props,
         verticalalignment='center',
